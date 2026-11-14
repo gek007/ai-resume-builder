@@ -55,6 +55,21 @@ export const auth = betterAuth({
   onAPIError: { errorURL: "/sign-in" },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/magic-link/verify") {
+        // Only our confirm page's form may spend a token. A verify URL opened any
+        // other way (a link in an email or on another site) could be someone
+        // else's token, sent to sign the visitor into the sender's account, so
+        // send it to the confirm page instead. Browsers that don't send the
+        // header (very old ones) fall through to the normal flow.
+        const site = ctx.headers?.get("sec-fetch-site");
+        if (site && site !== "same-origin") {
+          const query = new URLSearchParams();
+          query.set("token", String(ctx.query?.token ?? ""));
+          query.set("callbackURL", String(ctx.query?.callbackURL ?? ""));
+          throw ctx.redirect(toConfirmUrl(`${new URL(ctx.context.baseURL).origin}/?${query}`));
+        }
+        return;
+      }
       if (ctx.path !== "/sign-in/magic-link") return;
       const email = typeof ctx.body?.email === "string" ? ctx.body.email.trim().toLowerCase() : ctx.body?.email;
       if (typeof email === "string" && isDisposableEmail(email)) {
