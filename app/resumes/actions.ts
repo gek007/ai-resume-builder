@@ -11,6 +11,7 @@ import {
   renameResume,
   saveResume,
 } from "@/lib/resume/data";
+import { demoResume } from "@/lib/resume/demo";
 import { PAPER_SIZES, parseResumeContent } from "@/lib/resume/schema";
 
 export type SaveActionResult =
@@ -43,6 +44,13 @@ function parseBase(base: unknown): Date | "force" | null {
 export async function createResumeAction(): Promise<void> {
   const user = await requireUser("/dashboard");
   const id = await createResume(user.id, user.email);
+  redirect(`/resumes/${id}`);
+}
+
+// A new resume pre-filled with the sample content, to try the editor quickly.
+export async function createDemoResumeAction(): Promise<void> {
+  const user = await requireUser("/dashboard");
+  const id = await createResume(user.id, user.email, demoResume());
   redirect(`/resumes/${id}`);
 }
 

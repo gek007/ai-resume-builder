@@ -60,14 +60,20 @@ export async function getResume(userId: string, id: string): Promise<ResumeRecor
   return row ?? null;
 }
 
-export async function createResume(userId: string, email: string): Promise<string> {
+// Starts empty (with the account email in Contact) unless `init` gives a
+// starting point, such as the demo resume.
+export async function createResume(userId: string, email: string, init?: ResumeSaveInput): Promise<string> {
   const id = newId();
   const now = new Date();
   await db.insert(resume).values({
     id,
     userId,
-    title: "Untitled resume",
-    content: emptyResume(email),
+    title: init?.title ?? "Untitled resume",
+    content: init?.content ?? emptyResume(email),
+    paperSize: init?.paperSize ?? "A4",
+    jobTitle: init?.jobTitle ?? "",
+    jobCompany: init?.jobCompany ?? "",
+    jobDescription: init?.jobDescription ?? "",
     createdAt: now,
     updatedAt: now,
   });

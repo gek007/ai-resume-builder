@@ -81,13 +81,12 @@ function ContactForm({ content, update }: { content: ResumeContent; update: Upda
       <div className="flex flex-col gap-2">
         <span className="text-xs font-semibold text-muted">Links</span>
         {c.links.map((link, i) => (
-          <div key={link.id} className="flex items-center gap-2">
+          <div key={link.id} className="grid grid-cols-[8rem_minmax(0,1fr)_auto] items-center gap-2">
             <TextInput
               aria-label="Link label"
               placeholder="LinkedIn"
               value={link.label}
               maxLength={200}
-              className="w-32 shrink-0"
               onChange={(e) => set({ links: c.links.map((l, j) => (j === i ? { ...l, label: e.target.value } : l)) })}
             />
             <TextInput
