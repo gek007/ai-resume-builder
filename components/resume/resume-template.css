@@ -1,8 +1,9 @@
-/* The one ATS-friendly template: single column, real text, no tables or
+/* Plain global CSS with an rt- prefix: this project's Turbopack CSS rule
+   doesn't support CSS modules. The one ATS-friendly template: single column, real text, no tables or
    columns, so applicant tracking systems read it in order. Sizes are in
    print units so the preview and the PDF match. */
 
-.page {
+.rt-page {
   box-sizing: border-box;
   background: #fff;
   color: #111;
@@ -11,39 +12,39 @@
   padding: 18mm 16mm;
 }
 
-.page[data-paper="A4"] {
+.rt-page[data-paper="A4"] {
   width: 210mm;
   min-height: 297mm;
 }
 
-.page[data-paper="Letter"] {
+.rt-page[data-paper="Letter"] {
   width: 8.5in;
   min-height: 11in;
 }
 
-.name {
+.rt-name {
   font-size: 20pt;
   font-weight: 700;
   line-height: 1.15;
   margin: 0;
 }
 
-.headline {
+.rt-headline {
   font-size: 11.5pt;
   margin: 2pt 0 0;
 }
 
-.contactLine {
+.rt-contact-line {
   margin: 4pt 0 0;
   color: #333;
   overflow-wrap: anywhere;
 }
 
-.section {
+.rt-section {
   margin-top: 12pt;
 }
 
-.sectionTitle {
+.rt-section-title {
   font-size: 10.5pt;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -53,39 +54,41 @@
   margin: 0 0 6pt;
 }
 
-.entry + .entry {
+.rt-entry + .rt-entry {
   margin-top: 8pt;
 }
 
-.entryHead {
+.rt-entry-head {
   display: flex;
   justify-content: space-between;
   gap: 12pt;
 }
 
-.entryTitle {
+.rt-entry-title {
   font-weight: 600;
 }
 
-.dates {
+.rt-dates {
   white-space: nowrap;
   color: #333;
 }
 
-.sub {
+.rt-sub {
   color: #333;
 }
 
-.bullets {
+.rt-bullets {
   margin: 3pt 0 0 14pt;
   padding: 0;
+  /* Tailwind's base styles remove list markers; the template needs them. */
+  list-style: disc outside;
 }
 
-.bullets li {
+.rt-bullets li {
   margin: 1.5pt 0;
 }
 
-.text {
+.rt-text {
   margin: 0;
   white-space: pre-line;
 }
