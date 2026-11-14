@@ -127,7 +127,7 @@ Not chosen yet. The builder keeps it in **one config value**, so renaming is a o
 | Area | Choice | Status |
 |---|---|---|
 | Framework | Next.js 16.4.6 (App Router), React 19.3, Tailwind 4.3, TypeScript (already in the repo) | Decided |
-| Hosting | **Cloudways Velocity** (managed Node.js), Frankfurt | Decided (region is a Call) |
+| Hosting | **Vercel** (Fluid Compute, Node.js), functions in Frankfurt (`fra1`) next to the Neon database | Decided 2026-11-14 (replaces Cloudways Velocity; the app was already deployed there, and headless Chromium was verified on it) |
 | Database | **Neon Postgres**, Frankfurt, through **Drizzle ORM** | Decided |
 | Auth | **Better Auth**: Google and email magic link, users stored in Neon | Decided |
 | Email | **Resend**, for magic links | Call |
@@ -137,7 +137,7 @@ Not chosen yet. The builder keeps it in **one config value**, so renaming is a o
 | Analytics | **Plausible**, EU, no cookies and no consent banner | Decided |
 
 **Key technical calls:**
-- **One template, two outputs.** The live preview is an HTML/React render of the template. The PDF is the **same HTML printed by headless Chromium on the server**, so it contains real, selectable text and always matches the preview. Velocity's always-on Node server makes this possible.
+- **One template, two outputs.** The live preview is an HTML/React render of the template. The PDF is the **same HTML printed by headless Chromium on the server**, so it contains real, selectable text and always matches the preview. Verified on Vercel on 2026-11-14 with `puppeteer-core` + `@sparticuz/chromium`: real, extractable text on A4; about 2.7 s on a cold start and 0.15 s warm. The template must embed its own font (served with the app), because the Chromium build substitutes a bundled font for system fonts like Helvetica.
 - **Resume storage.** Each resume's content is **one JSON column**, checked against one shared Zod schema. The schema is the single source of truth for the editor, the template, the score rules, the AI calls and import.
 - **Scoring is plain code** in a pure function: resume JSON in, score and fixes out. It never calls AI, and it runs on both client and server.
 - **AI calls run only on the server.** Each one checks the user's limit before calling Claude and records the call afterwards. AI output is structured: import returns resume JSON, and keyword extraction returns a keyword list.
@@ -172,9 +172,9 @@ The landing, pricing and legal pages are indexed, with metadata, an Open Graph i
 
 - **Environments** *(Call)*:
   - **Local:** a Neon dev branch and the Paddle sandbox.
-  - **Staging:** a second Cloudways app, a Neon staging branch and the Paddle sandbox.
+  - **Staging:** Vercel preview deployments on the Neon `dev` branch and the Paddle sandbox.
   - **Production.**
-- **CI** *(Call)*: GitHub Actions runs lint, type check, unit tests and end-to-end tests on every PR. Deploys use Cloudways' git-based deploy. Check how Velocity deploys in its docs before setting this up.
+- **CI** *(Call)*: GitHub Actions runs lint, type check, unit tests and end-to-end tests on every PR. Deploys use Vercel's git integration (pushes to `main` deploy production; other branches get previews).
 - **Running costs:** under about **$100/month** before revenue. *(ASSUMPTION)*
 
 ---
@@ -198,7 +198,7 @@ The landing, pricing and legal pages are indexed, with metadata, an Open Graph i
 | Database | Neon + Drizzle | **Supabase:** all-in-one, but harder to leave later. **Convex:** real-time isn't needed and EU hosting is limited. |
 | Auth | Better Auth | **Clerk:** faster with polished ready-made screens, but user data is stored in the US and costs grow with users. |
 | AI | Claude through AI SDK | **Vercel AI Gateway:** an extra service, and the app isn't hosted on Vercel. **OpenAI:** no existing account. |
-| Hosting | Cloudways Velocity | **Vercel** was proposed; the owner chose Cloudways. |
+| Hosting | Vercel | **Cloudways Velocity** was the first choice; the owner switched to Vercel on 2026-11-14 once the app, database and keys were already wired there and headless Chromium was verified on it. |
 | PDF | Server-side Chromium print of the preview HTML | **A separate PDF layout (react-pdf):** the preview and PDF would drift apart. **Client-side print:** output varies by browser. |
 | Analytics | Plausible | **PostHog:** needs a consent banner in the EU. **None:** no view of where users drop off. |
 | Refunds | 14 days, every plan | **No refunds:** Paddle doesn't allow it. **Monthly with no refunds:** more complex, and EU withdrawal rules still apply. |
@@ -219,7 +219,7 @@ The landing, pricing and legal pages are indexed, with metadata, an Open Graph i
 
 1. **Paddle paying out to Israel is unconfirmed.** Confirm it with Paddle before building billing. If Paddle says no, switch to Polar, which officially supports Israel.
 2. **Product name and domain aren't chosen.** Paddle won't approve the account until the site is live on its domain, so this is on the critical path.
-3. **Headless Chromium on Cloudways Velocity is unverified.** Run a quick test of PDF printing on Velocity early in the build. If it fails, use a hosted HTML-to-PDF service fed the same HTML.
+3. ~~Headless Chromium on the host is unverified.~~ **Resolved 2026-11-14:** verified on Vercel (see the PDF call in section 5).
 4. **Paddle approval time.** Submit the site and the legal pages early.
 5. **PDF import quality** varies between source PDFs. Show the result for review rather than trusting it silently.
 6. **Visual design isn't decided** (see below).
@@ -244,8 +244,7 @@ The landing, pricing and legal pages are indexed, with metadata, an Open Graph i
    - If a monthly subscriber buys Lifetime, the monthly subscription is set to **cancel at the end of the current period**. There's no proration, and no further charges.
    - A refund event looks up the purchase by its Paddle transaction or subscription ID.
    - Store each purchase as its own row, so that refund-then-repurchase works.
-6. **Velocity spike first.**
-   - The **first build task** is a spike on Cloudways Velocity that tests the deploy, headless Chromium PDF printing, and the request timeout. Billing and the editor's PDF work wait for its result.
+6. **Hosting spike: done on Vercel (2026-11-14).** Headless Chromium printing works (see section 5); the default function timeout is 300 s.
    - If long requests time out, PDF import runs as a background job that the browser polls.
    - If Chromium fails, pick a hosted HTML-to-PDF service with an EU region and a DPA.
 7. **Autosave.**
@@ -254,7 +253,7 @@ The landing, pricing and legal pages are indexed, with metadata, an Open Graph i
    - **Two tabs editing the same resume:** each save is checked against `updatedAt`. If the resume was changed in another tab, the user is told and nothing is silently overwritten.
    - View-only resumes are blocked on the server, so their `updatedAt` never changes, and the "most recently edited" rule stays stable. Ties are broken by id.
 8. **Abuse.**
-   - **Cloudflare Turnstile** checks the magic-link signup form. Velocity already includes Cloudflare.
+   - **Cloudflare Turnstile** checks the magic-link signup form. Turnstile works without Cloudflare in front of the site.
    - Disposable email domains are blocked.
    - New signups are limited per IP address. Google sign-in needs no extra check.
 9. **Data kept after account deletion.**
