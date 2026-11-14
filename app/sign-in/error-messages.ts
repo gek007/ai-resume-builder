@@ -19,7 +19,8 @@ const GOOGLE_UNVERIFIED =
 // sign-in fails and sends the browser back to /sign-in.
 export function linkErrorMessage(code: string | undefined): string | null {
   if (!code) return null;
-  if (code === "INVALID_TOKEN" || code === "EXPIRED_TOKEN") return LINK_USED;
+  // Better Auth reports used and expired magic links alike as INVALID_TOKEN.
+  if (code === "INVALID_TOKEN") return LINK_USED;
   if (code === "account_not_linked" || code === "unable_to_link_account") return GOOGLE_UNVERIFIED;
   return "Sign-in didn't work. Please try again.";
 }

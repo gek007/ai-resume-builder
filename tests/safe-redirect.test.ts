@@ -15,6 +15,10 @@ test.each([
   ["/sign-in", "/dashboard"],
   ["/sign-in?returnTo=%2Fdashboard", "/dashboard"],
   ["%E0%A4%A", "/dashboard"],
+  ["/api/auth/magic-link/verify?token=attacker", "/dashboard"],
+  ["/api", "/dashboard"],
+  ["/%61pi/auth/sign-out", "/dashboard"],
+  ["/apiary", "/apiary"],
 ])("safeReturnTo(%j) = %j", (input, out) => {
   expect(safeReturnTo(input)).toBe(out);
 });

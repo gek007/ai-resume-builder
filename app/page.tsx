@@ -153,12 +153,12 @@ export default function Home() {
             <h2 className="max-w-md text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
               Your friends are already posting.
             </h2>
-            <a
-              href="#"
+            <Link
+              href="/sign-in"
               className="shrink-0 rounded-full bg-accent px-6 py-3.5 font-semibold text-accent-ink hover:brightness-110"
             >
               Create your account
-            </a>
+            </Link>
           </div>
         </section>
       </main>

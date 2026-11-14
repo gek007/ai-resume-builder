@@ -13,7 +13,6 @@ test.each([
 
 test.each([
   ["INVALID_TOKEN", "That sign-in link has expired or was already used. Request a new one."],
-  ["EXPIRED_TOKEN", "That sign-in link has expired or was already used. Request a new one."],
   ["account_not_linked", "Google hasn't verified this email address. Sign in with an email link instead."],
   ["unable_to_link_account", "Google hasn't verified this email address. Sign in with an email link instead."],
   ["access_denied", "Sign-in didn't work. Please try again."],

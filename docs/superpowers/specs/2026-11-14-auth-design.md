@@ -53,7 +53,7 @@ The first part of v1 "Accounts": people can sign up and sign in, and their ident
 - `drizzle-orm` with the **Neon serverless driver**; `drizzle-kit` **generates SQL migrations that are committed** and applied with `drizzle-kit migrate` (not `push`), so production changes are reviewable.
 - Better Auth's own tables (user, session, account, verification, plus rate-limit) are generated into the Drizzle schema, so they share one migration history with later tables.
 
-**Sessions** *(Call)*: Better Auth's default database sessions in an httpOnly, secure, SameSite=Lax cookie, with a short cookie cache to avoid a DB read on every request. Session length: Better Auth's default (7 days, refreshed while active).
+**Sessions** *(Call)*: Better Auth's default database sessions in an httpOnly, secure, SameSite=Lax cookie. Session length: Better Auth's default (7 days, refreshed while active; the dashboard refreshes the cookie through the auth route, because Server Components can't set cookies). **No cookie cache** (changed during the build): every check reads the session from the database, once per request (React `cache`), so signing out or revoking a session takes effect immediately everywhere.
 
 **Route protection** *(Call)*: a fast cookie check at the edge of the request (Next 16's proxy/middleware equivalent) redirects signed-out users away from `/dashboard` and other app routes. The **real check is on the server** in each page, action and route via `requireUser()`, which reads the session from the database. The proxy check alone is never trusted.
 

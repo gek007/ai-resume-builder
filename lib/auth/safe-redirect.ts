@@ -16,6 +16,9 @@ export function safeReturnTo(value: string | null | undefined): string {
 function isSafePath(path: string): boolean {
   if (!path.startsWith("/") || path.startsWith("//") || path.startsWith("/\\")) return false;
   if (/^\/sign-in(?:[/?#]|$)/.test(path)) return false;
+  // API routes aren't pages; a return-to like /api/auth/magic-link/verify?token=…
+  // would let someone chain the sign-in flow into another account's token.
+  if (/^\/api(?:[/?#]|$)/i.test(path)) return false;
   // Catches anything a browser would still resolve to another origin
   // (for example, tabs or newlines that browsers strip).
   return new URL(path, "http://same.invalid").origin === "http://same.invalid";

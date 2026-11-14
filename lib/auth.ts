@@ -1,19 +1,21 @@
+// The Better Auth CLI (`npx auth generate`) can't load files that import
+// "server-only": comment this line and the one in lib/db/index.ts out while it
+// runs, then restore them.
+import "server-only";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { captcha, magicLink } from "better-auth/plugins";
+import { assertProductionEnv, resolveAuthUrls } from "@/lib/auth/config";
 import { toConfirmUrl } from "@/lib/auth/confirm-url";
 import { isDisposableEmail } from "@/lib/auth/disposable";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 import { sendMagicLinkEmail } from "@/lib/email";
 
-// Production sets BETTER_AUTH_URL. Preview deployments have changing URLs,
-// so they fall back to the deployment's own host.
-const baseURL =
-  process.env.BETTER_AUTH_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
+assertProductionEnv(process.env);
+const { baseURL, trustedOrigins } = resolveAuthUrls(process.env);
 
 const google =
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
@@ -27,7 +29,7 @@ const google =
 
 export const auth = betterAuth({
   baseURL,
-  trustedOrigins: baseURL ? [baseURL] : [],
+  trustedOrigins,
   database: drizzleAdapter(db, { provider: "pg", schema }),
   socialProviders: google,
   account: {
