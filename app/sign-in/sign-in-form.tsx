@@ -83,7 +83,7 @@ export function SignInForm({ returnTo, error, googleEnabled, turnstileSiteKey }:
           <button
             type="button"
             onClick={signInWithGoogle}
-            className="rounded-full border border-line bg-print px-5 py-3 font-semibold hover:bg-background"
+            className="rounded-full border border-line bg-surface px-5 py-3 font-semibold hover:bg-background"
           >
             Continue with Google
           </button>
@@ -108,7 +108,7 @@ export function SignInForm({ returnTo, error, googleEnabled, turnstileSiteKey }:
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="rounded-2xl border border-line bg-print px-4 py-3 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+            className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
           <Turnstile
             ref={turnstile}

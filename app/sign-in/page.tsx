@@ -16,7 +16,7 @@ export default function SignInPage({ searchParams }: PageProps<"/sign-in">) {
   return (
     // Mobile padding leaves the Turnstile widget its 300px minimum at a 360px viewport.
     <main className="flex flex-1 items-center justify-center px-3 py-12 sm:px-4">
-      <div className="w-full max-w-sm rounded-3xl border border-line bg-print p-4 shadow-sm sm:p-8">
+      <div className="w-full max-w-sm rounded-3xl border border-line bg-surface p-4 shadow-sm sm:p-8">
         <Link href="/" className="text-sm font-semibold text-muted hover:text-foreground">
           ← {siteConfig.name}
         </Link>
