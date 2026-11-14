@@ -58,9 +58,8 @@ export async function signInViaLink(email: string) {
   const sent = await requestMagicLink(email);
   if (sent.status !== 200) throw new Error(`magic link request failed: ${sent.status}`);
   const res = await verify(lastMagicLinkUrl());
-  const session = await auth.api.getSession({
-    headers: new Headers({ cookie: sessionCookieFrom(res) }),
-  });
+  const cookie = sessionCookieFrom(res);
+  const session = await auth.api.getSession({ headers: new Headers({ cookie }) });
   if (!session) throw new Error("no session after verifying the magic link");
-  return session;
+  return { ...session, cookie };
 }
