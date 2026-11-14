@@ -4,8 +4,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
-      "@": path.resolve(__dirname),
-      "server-only": path.resolve(__dirname, "tests/empty-module.ts"),
+      "@": path.resolve(import.meta.dirname),
+      "server-only": path.resolve(import.meta.dirname, "tests/empty-module.ts"),
     },
   },
   test: {
