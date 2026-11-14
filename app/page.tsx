@@ -63,7 +63,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1 overflow-x-clip">
-        <section className="relative isolate flex min-h-svh items-center text-white">
+        <section className="relative isolate flex min-h-svh items-end text-white">
           {/* Café reference image (design/ui-kafe-ref.png), filling the whole screen and slowly drifting. */}
           <div className="absolute inset-0 -z-30 overflow-hidden">
             <div className="hero-drift absolute inset-0">
@@ -73,7 +73,7 @@ export default function Home() {
                 fill
                 preload
                 sizes="100vw"
-                className="object-cover object-[50%_45%]"
+                className="object-cover object-center"
               />
             </div>
           </div>
@@ -97,37 +97,42 @@ export default function Home() {
               />
             ))}
           </div>
-          {/* Darkening so the white text stays readable on top of the photo */}
+          {/* Darkening at the bottom only, so the text below the laptop is readable and the laptop screen stays bright */}
           <div
             aria-hidden
-            className="absolute inset-0 -z-20 bg-black/35 bg-linear-to-r from-black/70 via-black/35 to-transparent"
+            className="absolute inset-0 -z-20 bg-linear-to-t from-black/90 via-black/45 via-35% to-black/15"
           />
 
-          <div className="hero-video mx-auto w-full max-w-6xl px-5 pt-28 pb-20 sm:px-8">
-            <div className="max-w-xl">
-              <h1 className="text-5xl font-extrabold leading-[0.95] tracking-[-0.03em] sm:text-7xl">
-                Photos for the people who were there.
-              </h1>
-              <p className="mt-6 max-w-md text-lg leading-relaxed text-white/85">
-                Afterglow is a photo feed for your close friends. Post the day as it
-                happened and see what everyone else got up to, without the strangers
-                or the ads.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <a
-                  href="#"
-                  className="rounded-full bg-accent px-6 py-3.5 font-semibold text-accent-ink hover:brightness-110"
-                >
-                  Create your account
-                </a>
-                <a
-                  href="#"
-                  className="rounded-full px-5 py-3.5 font-semibold ring-1 ring-white/50 hover:bg-white/10"
-                >
-                  Sign in
-                </a>
+          {/* Text sits at the bottom of the screen, below the laptop */}
+          <div className="hero-video mx-auto w-full max-w-6xl px-5 pt-28 pb-8 sm:px-8 sm:pb-12">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+              <div className="max-w-3xl">
+                <h1 className="hero-title text-4xl font-extrabold leading-[0.95] tracking-[-0.03em] sm:text-6xl">
+                  Photos for the people who were there.
+                </h1>
+                <p className="hero-lede mt-4 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
+                  Afterglow is a photo feed for your close friends. Post the day as it
+                  happened and see what everyone else got up to, without the strangers
+                  or the ads.
+                </p>
               </div>
-              <p className="mt-4 text-sm text-white/75">Free on iPhone and Android.</p>
+              <div className="shrink-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  <a
+                    href="#"
+                    className="rounded-full bg-accent px-6 py-3.5 font-semibold text-accent-ink hover:brightness-110"
+                  >
+                    Create your account
+                  </a>
+                  <a
+                    href="#"
+                    className="rounded-full px-5 py-3.5 font-semibold ring-1 ring-white/50 hover:bg-white/10"
+                  >
+                    Sign in
+                  </a>
+                </div>
+                <p className="mt-3 text-sm text-white/75">Free on iPhone and Android.</p>
+              </div>
             </div>
           </div>
         </section>

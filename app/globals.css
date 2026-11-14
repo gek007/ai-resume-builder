@@ -60,10 +60,23 @@ body {
 
 @keyframes drift {
   from {
-    transform: scale(1.06) translate3d(-1.5%, 1%, 0);
+    transform: scale(1.03) translate3d(-1%, 0.5%, 0);
   }
   to {
-    transform: scale(1.16) translate3d(1.5%, -1.5%, 0);
+    transform: scale(1.09) translate3d(1%, -1%, 0);
+  }
+}
+
+/* On wide screens the photo is drawn larger, so the laptop takes more height:
+   keep the hero text compact there so it stays below the laptop screen. */
+@media (min-width: 640px) and (min-aspect-ratio: 3/2) {
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .hero-lede {
+    margin-top: 0.75rem;
+    font-size: 1rem;
   }
 }
 
