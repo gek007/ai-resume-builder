@@ -54,7 +54,17 @@ export function lastMagicLinkUrl(): string {
   return call[0].url;
 }
 
+// Accepts the emailed link. When it's the confirm page, this does what its
+// "Sign in" button does: a GET to the verify endpoint with the same token.
 export async function verify(url: string): Promise<Response> {
+  const link = new URL(url);
+  if (link.pathname === "/sign-in/confirm") {
+    const target = new URL("/api/auth/magic-link/verify", link.origin);
+    target.searchParams.set("token", link.searchParams.get("token") ?? "");
+    target.searchParams.set("callbackURL", link.searchParams.get("callbackURL") ?? "/dashboard");
+    target.searchParams.set("errorCallbackURL", "/sign-in");
+    url = target.toString();
+  }
   return auth.handler(new Request(url, { headers: { "x-forwarded-for": randomIp() } }));
 }
 

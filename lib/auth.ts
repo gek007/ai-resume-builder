@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { captcha, magicLink } from "better-auth/plugins";
+import { toConfirmUrl } from "@/lib/auth/confirm-url";
 import { isDisposableEmail } from "@/lib/auth/disposable";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
@@ -69,7 +70,8 @@ export const auth = betterAuth({
     magicLink({
       expiresIn: 15 * 60,
       storeToken: "hashed",
-      sendMagicLink: ({ email, url }) => sendMagicLinkEmail({ email, url }),
+      // The email links to our confirm page, never straight to verify.
+      sendMagicLink: ({ email, url }) => sendMagicLinkEmail({ email, url: toConfirmUrl(url) }),
     }),
     // Turnstile guards only the email form; Google sign-in needs no extra check.
     captcha({

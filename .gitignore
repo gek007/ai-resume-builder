@@ -43,3 +43,7 @@ next-env.d.ts
 
 # Playwright MCP browser session output
 .playwright-mcp/
+
+# Downloaded OAuth client credentials (Google "Download JSON")
+*.apps.googleusercontent.com.json
+client_secret*.json
