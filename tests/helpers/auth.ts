@@ -18,12 +18,19 @@ export function randomIp(): string {
 
 export async function requestMagicLink(
   email: string,
-  opts: { ip?: string; captcha?: string | null } = {},
+  opts: {
+    ip?: string;
+    captcha?: string | null;
+    callbackURL?: string;
+    errorCallbackURL?: string;
+    headers?: Record<string, string>;
+  } = {},
 ): Promise<Response> {
   const headers = new Headers({
     "content-type": "application/json",
     origin: ORIGIN,
     "x-forwarded-for": opts.ip ?? randomIp(),
+    ...opts.headers,
   });
   // Cloudflare's dummy token; the test env uses the always-pass secret.
   const captcha = opts.captcha === undefined ? "XXXX.DUMMY.TOKEN.XXXX" : opts.captcha;
@@ -32,7 +39,11 @@ export async function requestMagicLink(
     new Request(`${ORIGIN}/api/auth/sign-in/magic-link`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ email, callbackURL: "/dashboard", errorCallbackURL: "/sign-in" }),
+      body: JSON.stringify({
+        email,
+        callbackURL: opts.callbackURL ?? "/dashboard",
+        errorCallbackURL: opts.errorCallbackURL ?? "/sign-in",
+      }),
     }),
   );
 }

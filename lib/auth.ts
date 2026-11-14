@@ -37,6 +37,9 @@ export const auth = betterAuth({
     accountLinking: { enabled: true },
   },
   advanced: {
+    // Explicit, so tests (NODE_ENV=test) run Better Auth's origin and
+    // callback-URL checks exactly as production does.
+    disableOriginCheck: false,
     ipAddress: { ipAddressHeaders: [process.env.AUTH_IP_HEADER || "x-forwarded-for"] },
   },
   rateLimit: {

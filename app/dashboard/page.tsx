@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { requireUser } from "@/lib/auth/session";
 import { siteConfig } from "@/lib/site-config";
+import { SessionKeepAlive } from "./session-keep-alive";
 import { SignOutButton } from "./sign-out-button";
 
 export const metadata: Metadata = {
@@ -37,6 +38,7 @@ async function AccountMenu() {
   const user = await requireUser("/dashboard");
   return (
     <div className="flex min-w-0 items-center gap-3 text-sm">
+      <SessionKeepAlive />
       <span className="truncate text-muted">
         Signed in as <span className="font-semibold text-foreground">{user.email}</span>
       </span>

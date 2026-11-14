@@ -69,6 +69,17 @@ test("links accounts only when the provider reports the email as verified", () =
   expect(linking?.disableImplicitLinking).not.toBe(true);
 });
 
+test("get-session through the route refreshes a day-old session's cookie", async () => {
+  const { cookie } = await signInViaLink(uniqueEmail());
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(Date.now() + 2 * 24 * 60 * 60_000);
+  const res = await auth.handler(
+    new Request("http://localhost:3000/api/auth/get-session", { headers: { cookie } }),
+  );
+  expect(res.status).toBe(200);
+  expect(res.headers.getSetCookie().some((c) => c.includes("session_token="))).toBe(true);
+});
+
 test("send failure surfaces as an error", async () => {
   vi.mocked(sendMagicLinkEmail).mockRejectedValueOnce(new Error("resend down"));
   const res = await requestMagicLink(uniqueEmail());
