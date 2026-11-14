@@ -4,6 +4,8 @@ A simpler version of [Rezi](https://www.rezi.ai/).
 
 Rezi's paid product comes down to one loop: **build a resume → score it → tailor it to a job description → download it.** V1 builds that loop and nothing else.
 
+> **Decisions from the v1 interview are in [the v1 design spec](docs/superpowers/specs/2026-11-14-ai-resume-builder-v1-design.md).** Where the two differ, the spec wins. For example, billing uses **Paddle**, not Stripe, because Stripe doesn't appear to accept businesses based in Israel.
+
 ---
 
 ## How Rezi charges (reference)
