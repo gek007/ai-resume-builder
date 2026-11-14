@@ -49,9 +49,9 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
           <Logo />
           <nav className="flex items-center gap-2 text-sm font-medium sm:gap-4">
-            <a href="#" className="rounded-full px-3 py-2 hover:bg-white/10">
+            <Link href="/sign-in" className="rounded-full px-3 py-2 hover:bg-white/10">
               Sign in
-            </a>
+            </Link>
             <a
               href="#"
               className="rounded-full bg-white px-4 py-2 text-[#172033] hover:opacity-90"
@@ -118,18 +118,18 @@ export default function Home() {
               </div>
               <div className="shrink-0">
                 <div className="flex flex-wrap items-center gap-3">
-                  <a
-                    href="#"
+                  <Link
+                    href="/sign-in"
                     className="rounded-full bg-accent px-6 py-3.5 font-semibold text-accent-ink hover:brightness-110"
                   >
                     Create your account
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    href="/sign-in"
                     className="rounded-full px-5 py-3.5 font-semibold ring-1 ring-white/50 hover:bg-white/10"
                   >
                     Sign in
-                  </a>
+                  </Link>
                 </div>
                 <p className="mt-3 text-sm text-white/75">Free on iPhone and Android.</p>
               </div>
