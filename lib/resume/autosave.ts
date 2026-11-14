@@ -123,6 +123,10 @@ export function createAutosave<T>(opts: Options<T>) {
     update(doc: T) {
       pending = doc;
       writeDraft();
+      // A new edit can fix a refused document (trimmed) or a lost session
+      // (signed in again in another tab), so try again. A conflict or a
+      // deleted resume needs the person to choose, so those stay stopped.
+      if (stopped === "too_large" || stopped === "signed_out") stopped = null;
       if (!stopped && !disposed) schedule(debounceMs);
     },
     async flush() {

@@ -135,6 +135,32 @@ test("stops on unauthorized and keeps the draft", async () => {
   expect(storage.get("draft:1")).not.toBeNull();
 });
 
+test.each([
+  [{ status: "too_large" } as SaveActionResult, "too_large"],
+  [{ status: "unauthorized" } as SaveActionResult, "signed_out"],
+])("a new edit after %j tries again (the person trimmed it or signed in elsewhere)", async (first, stoppedAs) => {
+  const { autosave, statuses, calls } = setup([first]);
+  autosave.update({ text: "huge" });
+  await vi.advanceTimersByTimeAsync(800);
+  expect(statuses.at(-1)).toBe(stoppedAs);
+  autosave.update({ text: "smaller" });
+  await vi.advanceTimersByTimeAsync(800);
+  expect(calls.at(-1)).toEqual({ doc: { text: "smaller" }, base: "t0" });
+  expect(statuses.at(-1)).toBe("saved");
+});
+
+test.each([
+  [{ status: "conflict" } as SaveActionResult],
+  [{ status: "not_found" } as SaveActionResult],
+])("a new edit after %j stays stopped", async (first) => {
+  const { autosave, calls } = setup([first]);
+  autosave.update({ text: "a" });
+  await vi.advanceTimersByTimeAsync(800);
+  autosave.update({ text: "b" });
+  await vi.advanceTimersByTimeAsync(5000);
+  expect(calls).toHaveLength(1);
+});
+
 test("readDraft ignores a draft based on an older updatedAt", () => {
   const storage = memoryStorage();
   storage.set("draft:1", JSON.stringify({ base: "t0", doc: { text: "old" } }));
