@@ -19,6 +19,12 @@ test.each([
   ["/api", "/dashboard"],
   ["/%61pi/auth/sign-out", "/dashboard"],
   ["/apiary", "/apiary"],
+  // Dot segments: browsers resolve these before requesting, so check the result.
+  ["/x/../api/auth/magic-link/verify?token=a", "/dashboard"],
+  ["/./sign-in", "/dashboard"],
+  ["/%2e%2e/api/auth/sign-out", "/dashboard"],
+  ["/x\\..\\api/auth/sign-out", "/dashboard"],
+  ["/resumes/./1?tab=score#top", "/resumes/1?tab=score#top"],
 ])("safeReturnTo(%j) = %j", (input, out) => {
   expect(safeReturnTo(input)).toBe(out);
 });
