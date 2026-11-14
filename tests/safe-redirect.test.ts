@@ -25,6 +25,11 @@ test.each([
   ["/%2e%2e/api/auth/sign-out", "/dashboard"],
   ["/x\\..\\api/auth/sign-out", "/dashboard"],
   ["/resumes/./1?tab=score#top", "/resumes/1?tab=score#top"],
+  // Normalizing must not produce a protocol-relative URL (//evil.com).
+  ["/x/..//evil.com", "/dashboard"],
+  ["/.//evil.com", "/dashboard"],
+  ["/x\\..\\\\evil.com", "/dashboard"],
+  ["/x/%2e%2e//evil.com", "/dashboard"],
 ])("safeReturnTo(%j) = %j", (input, out) => {
   expect(safeReturnTo(input)).toBe(out);
 });

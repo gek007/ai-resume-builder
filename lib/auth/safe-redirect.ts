@@ -27,5 +27,24 @@ export function safeReturnTo(value: string | null | undefined): string {
   const resolvedDecoded = new URL(decoded, BASE);
   if (resolved.origin !== BASE || resolvedDecoded.origin !== BASE) return FALLBACK;
   if (BLOCKED.test(resolved.pathname) || BLOCKED.test(resolvedDecoded.pathname)) return FALLBACK;
-  return `${resolved.pathname}${resolved.search}${resolved.hash}`;
+  const result = `${resolved.pathname}${resolved.search}${resolved.hash}`;
+  // Resolving can itself create a protocol-relative URL (/x/..//evil.com
+  // becomes //evil.com), so the string we hand back gets the same checks.
+  return isSameSitePath(result) ? result : FALLBACK;
+}
+
+function isSameSitePath(path: string): boolean {
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(path);
+  } catch {
+    return false;
+  }
+  return [path, decoded].every(
+    (p) =>
+      p.startsWith("/") &&
+      !p.startsWith("//") &&
+      !p.startsWith("/\\") &&
+      new URL(p, BASE).origin === BASE,
+  );
 }
