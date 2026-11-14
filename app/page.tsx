@@ -1,43 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
-type Print = {
-  caption: string;
-  photo: string;
-  rotate: string;
-  delay: string;
-  position: string;
-};
-
-const prints: Print[] = [
-  {
-    caption: "lake day with maya",
-    photo: "linear-gradient(180deg, #8ec5fc 0%, #6aa7e8 55%, #2f6f8f 56%, #1d4e63 100%)",
-    rotate: "-8deg",
-    delay: "0ms",
-    position: "left-[0%] top-[3%]",
-  },
-  {
-    caption: "sam's 30th!!",
-    photo: "radial-gradient(circle at 30% 30%, #ffd23f 0 8%, transparent 9%), radial-gradient(circle at 70% 60%, #ff6b9a 0 10%, transparent 11%), linear-gradient(160deg, #2b1d4e, #5a2a7a)",
-    rotate: "6deg",
-    delay: "120ms",
-    position: "right-[2%] top-[0%]",
-  },
-  {
-    caption: "first snow, finally",
-    photo: "radial-gradient(ellipse at 30% 120%, #ffffff 0 55%, transparent 56%), radial-gradient(ellipse at 85% 115%, #f4f7fb 0 45%, transparent 46%), linear-gradient(180deg, #9fb3cc, #dbe4ee)",
-    rotate: "-3deg",
-    delay: "240ms",
-    position: "left-[10%] top-[50%]",
-  },
-  {
-    caption: "golden hour on the roof",
-    photo: "linear-gradient(180deg, #ff9a5a 0%, #ff6f61 45%, #6b3f6e 75%, #2a2240 100%)",
-    rotate: "9deg",
-    delay: "360ms",
-    position: "right-[0%] top-[46%]",
-  },
+// Specks of light that float up over the hero photo (positions are fixed so server and client render the same)
+const bokeh = [
+  { left: "8%", size: 10, dur: "16s", delay: "0s", sway: "30px" },
+  { left: "22%", size: 6, dur: "12s", delay: "3s", sway: "-20px" },
+  { left: "37%", size: 14, dur: "19s", delay: "6s", sway: "25px" },
+  { left: "54%", size: 8, dur: "14s", delay: "1.5s", sway: "-30px" },
+  { left: "68%", size: 12, dur: "17s", delay: "8s", sway: "20px" },
+  { left: "81%", size: 7, dur: "13s", delay: "4.5s", sway: "-15px" },
+  { left: "93%", size: 11, dur: "18s", delay: "10s", sway: "-25px" },
 ];
 
 const features = [
@@ -68,70 +41,94 @@ function Logo() {
   );
 }
 
-function PrintCard({ print }: { print: Print }) {
-  return (
-    <figure
-      className={`print absolute w-[44%] max-w-[230px] bg-print p-3 pb-2 shadow-[0_18px_40px_-18px_rgba(23,32,51,0.45)] ${print.position}`}
-      style={{ "--r": print.rotate, "--d": print.delay } as CSSProperties}
-    >
-      <div className="aspect-square w-full" style={{ background: print.photo }} />
-      <figcaption className="font-hand pt-2 text-center text-2xl leading-none text-[#172033]">
-        {print.caption}
-      </figcaption>
-    </figure>
-  );
-}
-
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-        <Logo />
-        <nav className="flex items-center gap-2 text-sm font-medium sm:gap-4">
-          <a href="#" className="rounded-full px-3 py-2 hover:bg-foreground/5">
-            Sign in
-          </a>
-          <a
-            href="#"
-            className="rounded-full bg-foreground px-4 py-2 text-background hover:opacity-90"
-          >
-            Get the app
-          </a>
-        </nav>
+    <div className="relative flex flex-1 flex-col">
+      {/* Header floats over the full-screen hero image */}
+      <header className="absolute inset-x-0 top-0 z-10 text-white">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+          <Logo />
+          <nav className="flex items-center gap-2 text-sm font-medium sm:gap-4">
+            <a href="#" className="rounded-full px-3 py-2 hover:bg-white/10">
+              Sign in
+            </a>
+            <a
+              href="#"
+              className="rounded-full bg-white px-4 py-2 text-[#172033] hover:opacity-90"
+            >
+              Get the app
+            </a>
+          </nav>
+        </div>
       </header>
 
       <main className="flex-1 overflow-x-clip">
-        <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pt-10 pb-20 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:pt-16">
-          <div className="max-w-xl">
-            <h1 className="text-5xl font-extrabold leading-[0.95] tracking-[-0.03em] sm:text-7xl">
-              Photos for the people who were there.
-            </h1>
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-muted">
-              Afterglow is a photo feed for your close friends. Post the day as it
-              happened and see what everyone else got up to, without the strangers
-              or the ads.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href="#"
-                className="rounded-full bg-accent px-6 py-3.5 font-semibold text-accent-ink hover:brightness-110"
-              >
-                Create your account
-              </a>
-              <a
-                href="#"
-                className="rounded-full px-5 py-3.5 font-semibold ring-1 ring-line hover:bg-foreground/5"
-              >
-                Sign in
-              </a>
+        <section className="relative isolate flex min-h-svh items-center text-white">
+          {/* Café reference image (design/ui-kafe-ref.png), filling the whole screen and slowly drifting. */}
+          <div className="absolute inset-0 -z-30 overflow-hidden">
+            <div className="hero-drift absolute inset-0">
+              <Image
+                src="/hero-cafe.jpg"
+                alt="A laptop on a marble café table next to a latte and a slice of chocolate cake"
+                fill
+                preload
+                sizes="100vw"
+                className="object-cover object-[50%_45%]"
+              />
             </div>
-            <p className="mt-4 text-sm text-muted">Free on iPhone and Android.</p>
           </div>
-
-          <div className="relative mx-auto aspect-[1/1.15] w-full max-w-[500px]">
-            {prints.map((print) => (
-              <PrintCard key={print.caption} print={print} />
+          {/* Warm light that slowly breathes, plus specks of light drifting upward */}
+          <div aria-hidden className="hero-glow absolute inset-0 -z-10" />
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+            {bokeh.map((b, i) => (
+              <span
+                key={i}
+                className="hero-bokeh"
+                style={
+                  {
+                    left: b.left,
+                    width: b.size,
+                    height: b.size,
+                    "--dur": b.dur,
+                    "--delay": b.delay,
+                    "--sway": b.sway,
+                  } as CSSProperties
+                }
+              />
             ))}
+          </div>
+          {/* Darkening so the white text stays readable on top of the photo */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-20 bg-black/35 bg-linear-to-r from-black/70 via-black/35 to-transparent"
+          />
+
+          <div className="hero-video mx-auto w-full max-w-6xl px-5 pt-28 pb-20 sm:px-8">
+            <div className="max-w-xl">
+              <h1 className="text-5xl font-extrabold leading-[0.95] tracking-[-0.03em] sm:text-7xl">
+                Photos for the people who were there.
+              </h1>
+              <p className="mt-6 max-w-md text-lg leading-relaxed text-white/85">
+                Afterglow is a photo feed for your close friends. Post the day as it
+                happened and see what everyone else got up to, without the strangers
+                or the ads.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <a
+                  href="#"
+                  className="rounded-full bg-accent px-6 py-3.5 font-semibold text-accent-ink hover:brightness-110"
+                >
+                  Create your account
+                </a>
+                <a
+                  href="#"
+                  className="rounded-full px-5 py-3.5 font-semibold ring-1 ring-white/50 hover:bg-white/10"
+                >
+                  Sign in
+                </a>
+              </div>
+              <p className="mt-4 text-sm text-white/75">Free on iPhone and Android.</p>
+            </div>
           </div>
         </section>
 
