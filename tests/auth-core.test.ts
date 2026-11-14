@@ -59,8 +59,14 @@ test("normalizes email so casing does not create a second user", async () => {
   expect(b.user.email).toBe(`${local}@example.com`);
 });
 
-test("google is a trusted provider for account linking", () => {
-  expect(auth.options.account?.accountLinking?.trustedProviders).toContain("google");
+test("links accounts only when the provider reports the email as verified", () => {
+  // A trusted provider links even unverified emails; a Google account can carry
+  // an address its owner never verified, which would allow account takeover.
+  const linking: { enabled?: boolean; trustedProviders?: unknown; disableImplicitLinking?: boolean } | undefined =
+    auth.options.account?.accountLinking;
+  expect(linking?.enabled).toBe(true);
+  expect(linking?.trustedProviders ?? []).not.toContain("google");
+  expect(linking?.disableImplicitLinking).not.toBe(true);
 });
 
 test("send failure surfaces as an error", async () => {

@@ -25,6 +25,9 @@ export async function requestMagicLink(
     origin: ORIGIN,
     "x-forwarded-for": opts.ip ?? randomIp(),
   });
+  // Cloudflare's dummy token; the test env uses the always-pass secret.
+  const captcha = opts.captcha === undefined ? "XXXX.DUMMY.TOKEN.XXXX" : opts.captcha;
+  if (captcha !== null) headers.set("x-captcha-response", captcha);
   return auth.handler(
     new Request(`${ORIGIN}/api/auth/sign-in/magic-link`, {
       method: "POST",

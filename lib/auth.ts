@@ -1,8 +1,9 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
-import { createAuthMiddleware } from "better-auth/api";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { magicLink } from "better-auth/plugins";
+import { captcha, magicLink } from "better-auth/plugins";
+import { isDisposableEmail } from "@/lib/auth/disposable";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 import { sendMagicLinkEmail } from "@/lib/email";
@@ -29,9 +30,11 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   socialProviders: google,
   account: {
-    // Same email via Google or a magic link is the same person: Google verifies
-    // its emails, and opening a magic link proves mailbox ownership.
-    accountLinking: { enabled: true, trustedProviders: ["google"] },
+    // Same email via Google or a magic link is the same person. Google sign-in
+    // links to an existing account only when Google reports the email as
+    // verified (Better Auth's default). Don't add Google to trustedProviders:
+    // that would link unverified addresses too, which allows account takeover.
+    accountLinking: { enabled: true },
   },
   advanced: {
     ipAddress: { ipAddressHeaders: [process.env.AUTH_IP_HEADER || "x-forwarded-for"] },
@@ -50,6 +53,12 @@ export const auth = betterAuth({
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path !== "/sign-in/magic-link") return;
       const email = typeof ctx.body?.email === "string" ? ctx.body.email.trim().toLowerCase() : ctx.body?.email;
+      if (typeof email === "string" && isDisposableEmail(email)) {
+        throw new APIError("BAD_REQUEST", {
+          code: "DISPOSABLE_EMAIL",
+          message: "Disposable email addresses aren't allowed.",
+        });
+      }
       return { context: { body: { ...ctx.body, email } } };
     }),
   },
@@ -58,6 +67,12 @@ export const auth = betterAuth({
       expiresIn: 15 * 60,
       storeToken: "hashed",
       sendMagicLink: ({ email, url }) => sendMagicLinkEmail({ email, url }),
+    }),
+    // Turnstile guards only the email form; Google sign-in needs no extra check.
+    captcha({
+      provider: "cloudflare-turnstile",
+      secretKey: process.env.TURNSTILE_SECRET_KEY ?? "",
+      endpoints: ["/sign-in/magic-link"],
     }),
     nextCookies(), // must stay last
   ],

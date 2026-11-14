@@ -16,6 +16,7 @@
     "@better-auth/drizzle-adapter": "^1.7.24",
     "@neondatabase/serverless": "^1.2.1",
     "better-auth": "^1.7.24",
+    "disposable-email-domains-js": "^2.0.0",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.6",
     "react": "19.3.0",
